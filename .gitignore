@@ -97,3 +97,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+**.vscode
+**.cache-*
+**_saved_tracks.txt
+**_saved_tracks.json
