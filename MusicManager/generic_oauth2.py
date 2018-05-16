@@ -28,8 +28,6 @@ def is_token_expired(token_info):
 
 
 class GenericClientCredentials(object):
-    OAUTH_TOKEN_URL = 'https://accounts.Generic.com/api/token'
-
     def __init__(self, OAUTH_TOKEN_URL, client_id=None, client_secret=None, proxies=None):
         """
         You can either provid a client_id and client_secret to the
@@ -37,10 +35,10 @@ class GenericClientCredentials(object):
         environment variables
         """
         if not client_id:
-            client_id = os.getenv('SPOTIPY_CLIENT_ID')
+            client_id = os.getenv('CLIENT_ID')
 
         if not client_secret:
-            client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
+            client_secret = os.getenv('CLIENT_SECRET')
 
         if not client_id:
             raise GenericOauthError('No client id')
