@@ -6,18 +6,20 @@ class Song(dict):
         ret += '[' + self['album'] + '],'
         ret += '[' + str(self['track_number']) + '],'
         ret += '[' + self['name'] + '],'
+        ret += '[' + self['track_id'] + '],'
         ret += '[' + str(self['duration_ms']) + ']'
         return ret
 
     def __hash__(self):
         return hash(self['name']) + hash(self['album']) + hash(self['artist'])
     
-    def __init__(self, name, album, artist, track_number=0, duration_ms=0):
+    def __init__(self, name, album, artist, track_id='', track_number=0, duration_ms=0):
         super(Song, self).__setitem__('name', name)
         super(Song, self).__setitem__('album', album)
         super(Song, self).__setitem__('artist', artist)
         super(Song, self).__setitem__('track_number', track_number)
         super(Song, self).__setitem__('duration_ms', duration_ms)
+        super(Song, self).__setitem__('track_id', track_id)
     
     def __eq__(self,other):
         return self['name'] == other['name'] and self['album'] == other['album'] and self['artist'] == other['artist']

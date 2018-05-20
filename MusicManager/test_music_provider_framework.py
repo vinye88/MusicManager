@@ -1,9 +1,10 @@
 import unittest, json
-from music_provider_framework import Spotify, MusicExportFormat
+from music_provider_framework import MusicExportFormat, Spotify, Deezer
 
 class TestCaseHelperForMusicProviderFramework(unittest.TestCase):
     username = 'vinye_mustaine'
 
+#@unittest.skip
 class TestSpotify(TestCaseHelperForMusicProviderFramework):
     def test_constructor(self):
         mp = Spotify(self.username)
@@ -62,6 +63,16 @@ class TestSpotify(TestCaseHelperForMusicProviderFramework):
         #check file not empty
 
 
+class TestDeezer(TestCaseHelperForMusicProviderFramework):
+    def test_constructor(self):
+        self.assertTrue(Deezer(self.username).connect())
+
+    def test_get_saved_tracks(self):
+        mp = Deezer(self.username)
+        self.assertTrue(mp.connect(), 'could not connect')
+        self.assertTrue(mp.get_saved_tracks(), 'could not get saved tracks')
+        self.assertGreater(mp.saved_tracks.artist_len(),0, 'saved tracks length is zero')
+        print('')
 
 if __name__ == '__main__':
     unittest.main()

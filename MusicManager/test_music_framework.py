@@ -4,7 +4,7 @@ from music_framework import Song, Album, Artist, MusicLibrary
 class TestCaseHelperForMusicFramework(unittest.TestCase):
     songs = [
         Song('A','A','A'),
-        Song('A','A','A', 2, 32768),
+        Song('A','A','A', 'SONG_02', 2, 32768),
         Song('A','A','a'),
         Song('A','a','A'),
         Song('a','A','A')
@@ -31,6 +31,8 @@ class TestSong(TestCaseHelperForMusicFramework):
         self.assertEqual(self.songs[0]['artist'], 'A')
         self.assertEqual(self.songs[0]['track_number'], 0)
         self.assertEqual(self.songs[0]['duration_ms'], 0)
+        self.assertEqual(self.songs[0]['track_id'], '')
+        self.assertEqual(self.songs[1]['track_id'], 'SONG_02')
         self.assertEqual(self.songs[1]['track_number'], 2)
         self.assertEqual(self.songs[1]['duration_ms'], 32768)
     
@@ -56,6 +58,7 @@ class TestSong(TestCaseHelperForMusicFramework):
             strtocheck += '[' + song['album'] + '],'
             strtocheck += '[' + str(song['track_number']) + '],'
             strtocheck += '[' + song['name'] + '],'
+            strtocheck += '[' + song['track_id'] + '],'
             strtocheck += '[' + str(song['duration_ms']) + ']'
             self.assertEqual(str(song), strtocheck)
 
@@ -160,9 +163,10 @@ class TestMusicLibrary(TestCaseHelperForMusicFramework):
         self.assertEqual(iy, l.album_len(), "wrong album number")
         self.assertEqual(iz, l.song_len(), "wrong song number")
 
-    @unittest.expectedFailure
+    @unittest.SkipTest
     def test_massive_song_add2(self):
-        f = open('.\\rawmusiclib.txt','r', encoding='utf8')
+        username = ''
+        f = open('.\\'+ username +'_saved_tracks.txt','r', encoding='utf8')
         lines = f.readlines()
         f.close()
         l = MusicLibrary()
