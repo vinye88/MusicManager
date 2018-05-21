@@ -12,7 +12,7 @@ class MusicExportFormat(Enum):
 class MusicProvider():
     def __init__(self, username, scope, client_id, client_secret, redirect_uri):
         self.username = username
-        self.scope = 'user-library-read'
+        self.scope = scope
         self.saved_tracks = MusicLibrary(username)
         self.token = None
         self.CLIENT_ID = client_id
@@ -26,12 +26,12 @@ class MusicProvider():
             f = open(location + '\\' + self.username + '_saved_tracks.txt','w', encoding='utf8')
             for song in songlist:
                 s = '\t'.join([
-                    song['artist'],
-                    song['album'],
-                    str(song['track_number']),
                     song['name'],
-                    song['track_id'],
-                    str(song['duration_ms'])
+                    song['album'],
+                    song['artist'],
+                    str(song['track_number']),
+                    str(song['duration_ms']),
+                    song['track_id']
                 ])
                 f.write(s + '\n')
             f.close()
@@ -183,12 +183,12 @@ class Deezer(MusicProvider):
             }
             self._save_persistent_info('.\\.cache-deezer', json.dumps(txt))
         REDIRECT_URI='http://localhost/'
-        scope = 'user-library-read'
+        self.scope = 'manage_library'
         self.OAUTH_TOKEN_URL = 'https://connect.deezer.com/oauth/auth.php'
         self.OAUTH_ACCESS_TOKEN_URL = 'https://connect.deezer.com/oauth/access_token.php'
         self.proxies = None
 
-        super(Deezer,self).__init__(username, scope, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+        super(Deezer,self).__init__(username, self.scope, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
     
     def _save_persistent_info(self, file, content):
         f = open(file,'w')
@@ -229,7 +229,7 @@ class Deezer(MusicProvider):
         successfull_op = True
         url = 'https://api.deezer.com/user/me/tracks?'
         url += 'access_token=' + self.token['access_token']
-        response = requests.get(url, verify=True, proxies=self.proxies).json()
+        response = requests.get(url).json()
         keep_search = True
         while keep_search:
             tracks = response['data']
@@ -247,3 +247,26 @@ class Deezer(MusicProvider):
                 response = requests.get(url, verify=True, proxies=self.proxies).json()
             else: keep_search = False
         return successfull_op
+
+    def _get_track(self, song):
+        url = 'https://api.deezer.com/search?'
+        url += 'access_token=' + self.token['access_token']
+        url += '&q=' + ' '.join([song['name'], song['album'], song['artist']])
+        response = requests.get(url).json()
+        if response['total'] > 0:
+            track = response['data'][0]
+            return Song(
+                name=track['title'],
+                album=track['album']['title'],
+                artist=track['artist']['name'],
+                track_number='0',
+                track_id=track['id'],
+                duration_ms=str(int(track['duration'])*1000))
+        pass
+
+    def synchronize_list(self, songs):
+        for song in songs:
+            s = self._get_track(song)
+            self.saved_tracks.add(s)
+            #put a sleep here
+        pass

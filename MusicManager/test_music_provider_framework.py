@@ -1,5 +1,6 @@
 import unittest, json
 from music_provider_framework import MusicExportFormat, Spotify, Deezer
+from music_framework import MusicLibrary, Song
 
 class TestCaseHelperForMusicProviderFramework(unittest.TestCase):
     username = 'vinye_mustaine'
@@ -72,7 +73,20 @@ class TestDeezer(TestCaseHelperForMusicProviderFramework):
         self.assertTrue(mp.connect(), 'could not connect')
         self.assertTrue(mp.get_saved_tracks(), 'could not get saved tracks')
         self.assertGreater(mp.saved_tracks.artist_len(),0, 'saved tracks length is zero')
-        print('')
+    
+    def test_synchronize_list(self):
+        mp = Deezer(self.username)
+        mp.connect()
+        f = open('.\\' + self.username + '_saved_tracks.txt','r', encoding='utf8')
+        lines = f.readlines()
+        f.close()
+        music_list = MusicLibrary('vinye_mustaine')
+        for line in lines:
+            music_list.add(Song(*line.split('\t')))
+        print(str(music_list))
+        mp.synchronize_list(music_list.getsongs())
+        print(str(len(mp.saved_tracks.getsongs())))
+
 
 if __name__ == '__main__':
     unittest.main()
